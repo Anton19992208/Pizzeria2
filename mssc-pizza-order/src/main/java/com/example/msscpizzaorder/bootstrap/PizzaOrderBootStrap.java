@@ -21,7 +21,7 @@ public class PizzaOrderBootStrap implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
-        if (customerRepository.findAllByCustomerNameLike(PizzaOrderBootStrap.TASTING_ROOM).size() == 0) {
+        if (customerRepository.findAllByCustomerNameLike(PizzaOrderBootStrap.TASTING_ROOM).isEmpty()) {
             loadCustomerData();
         }
 

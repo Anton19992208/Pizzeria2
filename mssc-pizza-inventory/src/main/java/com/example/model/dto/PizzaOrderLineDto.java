@@ -16,21 +16,21 @@ import java.time.LocalDate;
 public class PizzaOrderLineDto {
 
     @JsonProperty("id")
-    private Long id = null;
+    private Long id;
 
     @JsonProperty("version")
-    private Integer version = null;
+    private Integer version;
 
     @JsonProperty("createdDate")
-    private LocalDate createdDate = null;
+    private LocalDate createdDate;
 
     @JsonProperty("lastModifiedDate")
-    private LocalDate lastModifiedDate = null;
+    private LocalDate lastModifiedDate;
     private String upc;
     private String pizzaName;
     private Integer size;
     private Long pizzaId;
-    private Integer orderQuantity = 0;
+    private Integer orderQuantity;
     private BigDecimal price;
     private Integer quantityAllocated;
 }

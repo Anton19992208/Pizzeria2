@@ -29,7 +29,9 @@ public class PizzaTestingRoomService {
     private final CustomerRepository customerRepository;
     private final List<String> pizzaUpcs = new ArrayList<>(3);
 
-    public PizzaTestingRoomService(PizzaOrderService pizzaOrderService, PizzaOrderRepository pizzaOrderRepository, CustomerRepository customerRepository) {
+    public PizzaTestingRoomService(PizzaOrderService pizzaOrderService,
+                                   PizzaOrderRepository pizzaOrderRepository,
+                                   CustomerRepository customerRepository) {
         this.pizzaOrderService = pizzaOrderService;
         this.pizzaOrderRepository = pizzaOrderRepository;
         this.customerRepository = customerRepository;

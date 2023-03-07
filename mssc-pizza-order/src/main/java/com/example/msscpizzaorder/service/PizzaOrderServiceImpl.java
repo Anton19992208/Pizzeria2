@@ -1,7 +1,6 @@
 package com.example.msscpizzaorder.service;
 
 import com.example.model.dto.PizzaOrderDto;
-import com.example.model.dto.PizzaOrderPagedList;
 import com.example.msscpizzaorder.domain.Customer;
 import com.example.msscpizzaorder.domain.PizzaOrder;
 import com.example.msscpizzaorder.domain.PizzaOrderStatus;
@@ -11,13 +10,10 @@ import com.example.msscpizzaorder.repository.PizzaOrderRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
-
-import static java.util.stream.Collectors.toList;
 
 @Slf4j
 @Service
@@ -30,24 +26,11 @@ public class PizzaOrderServiceImpl implements PizzaOrderService {
     private final PizzaOrderManager pizzaOrderManager;
 
     @Override
-    public PizzaOrderPagedList listOrders(Long customerId, Pageable pageable) {
+    public Page<PizzaOrderDto> listOrders(Long customerId, Pageable pageable) {
         Optional<Customer> customerOptional = customerRepository.findById(customerId);
 
-        if (customerOptional.isPresent()) {
-            Page<PizzaOrder> pizzaPageOrder = pizzaOrderRepository.findAllByCustomer(customerOptional.get(), pageable);
-
-            return new PizzaOrderPagedList(pizzaPageOrder
-                    .stream()
-                    .map(pizzaOrderMapper::pizzaOrderToPizzaOrderDto)
-                    .collect(toList()),
-                    PageRequest
-                            .of(pizzaPageOrder.getPageable().getPageNumber(),
-                                    pizzaPageOrder.getPageable().getPageSize()),
-                    pizzaPageOrder.getTotalElements()
-            );
-        } else {
-            return null;
-        }
+        return customerOptional.map(customer -> pizzaOrderRepository.findAllByCustomer(customer, pageable)
+                .map(pizzaOrderMapper::pizzaOrderToPizzaOrderDto)).orElseGet(Page::empty);
     }
 
     @Override

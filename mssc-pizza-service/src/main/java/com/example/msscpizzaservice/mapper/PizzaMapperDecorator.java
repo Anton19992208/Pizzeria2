@@ -2,7 +2,9 @@ package com.example.msscpizzaservice.mapper;
 
 import com.example.model.dto.PizzaDto;
 import com.example.msscpizzaservice.domain.Pizza;
+import com.example.msscpizzaservice.service.inventory.InventoryServiceFeignClient;
 import com.example.msscpizzaservice.service.inventory.PizzaInventoryService;
+import com.example.msscpizzaservice.service.inventory.PizzaInventoryServiceFeign;
 import org.springframework.beans.factory.annotation.Autowired;
 
 public abstract class PizzaMapperDecorator implements PizzaMapper{

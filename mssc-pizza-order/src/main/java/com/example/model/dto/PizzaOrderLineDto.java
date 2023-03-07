@@ -14,13 +14,13 @@ import java.time.LocalDate;
 @Builder
 public class PizzaOrderLineDto {
 
-    private Long id = null;
+    private Long id;
 
-    private Integer version = null;
+    private Integer version;
 
-    private LocalDate createdDate = null;
+    private LocalDate createdDate;
 
-    private LocalDate lastModifiedDate = null;
+    private LocalDate lastModifiedDate;
 
     private String upc;
 
@@ -30,7 +30,7 @@ public class PizzaOrderLineDto {
 
     private Long pizzaId;
 
-    private Integer orderQuantity = 0;
+    private Integer orderQuantity;
 
     private BigDecimal price;
 
