@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.data.domain.Pageable;
 
 import java.time.LocalDate;
 
@@ -13,13 +14,13 @@ import java.time.LocalDate;
 @Builder
 public class CustomerDto {
 
-    private Long id = null;
+    private Long id;
 
-    private Integer version = null;
+    private Integer version;
 
-    private LocalDate createdDate = null;
+    private LocalDate createdDate;
 
-    private LocalDate lastModifiedDate = null;
+    private LocalDate lastModifiedDate;
 
     private String name;
 

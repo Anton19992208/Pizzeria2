@@ -32,7 +32,7 @@ public class AllocateOrderAction implements Action<PizzaOrderStatus, PizzaOrderE
 
         Optional<PizzaOrder> pizzaOrderOptional = pizzaOrderRepository.findById(Long.valueOf(pizzaOrderId));
 
-        log.debug("Sent Allocation Request for order id: " + pizzaOrderId);
+        log.debug("Send allocation request for orderId" + pizzaOrderId);
 
         pizzaOrderOptional.ifPresentOrElse(pizzaOrder -> {
             jmsTemplate.convertAndSend(JmsConfig.ALLOCATE_ORDER_QUEUE,
@@ -40,8 +40,7 @@ public class AllocateOrderAction implements Action<PizzaOrderStatus, PizzaOrderE
                             .pizzaOrderDto(pizzaOrderMapper.pizzaOrderToPizzaOrderDto(pizzaOrder))
                             .build());
             log.debug("Sent Allocation Request for order id: " + pizzaOrderId);
-        }, () -> log.error("Beer Order Not Found!"));
-
-
+        }, () -> log.error("PizzaOrder NotFound"));
     }
+
 }

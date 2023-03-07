@@ -1,12 +1,13 @@
 package com.example.msscpizzaorder.web.controller;
 
-import com.example.model.dto.CustomerPagedList;
+import com.example.model.dto.CustomerDto;
+import com.example.model.dto.PageResponse;
 import com.example.msscpizzaorder.service.CustomerService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -15,23 +16,12 @@ import org.springframework.web.bind.annotation.RestController;
 public class CustomerController {
 
     private final CustomerService customerService;
-    private static final Integer DEFAULT_PAGE_NUMBER = 0;
-    private static final Integer DEFAULT_PAGE_SIZE = 25;
 
     @GetMapping
-    public CustomerPagedList listCustomers(@RequestParam(value = "pageNumber", required = false) Integer pageNumber,
-                                           @RequestParam(value = "pageSize", required = false) Integer pageSize){
+    public PageResponse<CustomerDto> listCustomers(Pageable pageable){
+       Page<CustomerDto> customer = customerService.listCustomers(pageable);
 
-        if (pageNumber == null || pageNumber < 0){
-            pageNumber = DEFAULT_PAGE_NUMBER;
-        }
-
-        if (pageSize == null || pageSize < 1) {
-            pageSize = DEFAULT_PAGE_SIZE;
-        }
-
-        return customerService.listCustomers(PageRequest.of(pageNumber, pageSize));
-
+       return PageResponse.of(customer);
     }
 
 }

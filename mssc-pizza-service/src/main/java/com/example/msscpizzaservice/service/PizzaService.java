@@ -2,11 +2,15 @@ package com.example.msscpizzaservice.service;
 
 import com.example.model.dto.PizzaDto;
 import com.example.model.dto.PizzaPagedList;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+
+import java.util.List;
 
 public interface PizzaService {
 
-    PizzaPagedList findAll(String pizzaName, Integer size, PageRequest of, Boolean showQuantityOnHand);
+    Page<PizzaDto> findAll(Pageable pageable, Boolean quantityOnHand);
 
     PizzaDto findById(Long id, Boolean showInventoryOnHand);
 

@@ -7,7 +7,6 @@ import java.util.List;
 
 public interface PizzaInventoryRepository extends JpaRepository<PizzaInventory, Long> {
 
-    //todo: Optional
     List<PizzaInventory> findAllByPizzaId(Long id);
     List<PizzaInventory> findAllByUpc(String upc);
 }

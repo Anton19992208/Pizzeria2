@@ -16,7 +16,4 @@ public interface PizzaOrderRepository extends JpaRepository<PizzaOrder, Long> {
 
     List<PizzaOrder> findAllByOrderStatus(PizzaOrderStatus pizzaOrderStatus);
 
-    PizzaOrder save(PizzaOrder pizzaOrder);
-
-
 }

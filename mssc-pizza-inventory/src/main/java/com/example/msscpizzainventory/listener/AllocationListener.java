@@ -26,11 +26,7 @@ public class AllocationListener {
         try{
             Boolean allocationResult = allocationService.allocateOrder(request.getPizzaOrderDto());
 
-            if (allocationResult){
-                builder.pendingInventory(false);
-            } else {
-                builder.pendingInventory(true);
-            }
+            builder.pendingInventory(!allocationResult);
 
             builder.allocationError(false);
         } catch (Exception e){

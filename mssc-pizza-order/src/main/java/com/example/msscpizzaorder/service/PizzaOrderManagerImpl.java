@@ -3,6 +3,7 @@ package com.example.msscpizzaorder.service;
 import com.example.model.dto.PizzaOrderDto;
 import com.example.msscpizzaorder.domain.PizzaOrder;
 import com.example.msscpizzaorder.domain.PizzaOrderEvent;
+import com.example.msscpizzaorder.domain.PizzaOrderLine;
 import com.example.msscpizzaorder.domain.PizzaOrderStatus;
 import com.example.msscpizzaorder.repository.PizzaOrderRepository;
 import com.example.msscpizzaorder.sm.PizzaOrderStateChangeInterceptor;
@@ -16,6 +17,7 @@ import org.springframework.statemachine.support.DefaultStateMachineContext;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -44,7 +46,6 @@ public class PizzaOrderManagerImpl implements PizzaOrderManager {
     @Transactional
     @Override
     public PizzaOrder newPizzaOrder(PizzaOrder pizzaOrder) {
-        pizzaOrder.setId(null);
         pizzaOrder.setOrderStatus(NEW);
 
         PizzaOrder savedPizzaOrder = pizzaOrderRepository.saveAndFlush(pizzaOrder);
@@ -55,9 +56,8 @@ public class PizzaOrderManagerImpl implements PizzaOrderManager {
     @Override
     public void processValidationResult(Long pizzaOrderId, Boolean isValid) {
         log.debug("Process validation for pizzaOrderId" + pizzaOrderId + "isValid?: " + isValid);
-        PizzaOrder pizzaOrderFound;
 
-        pizzaOrderFound = pizzaOrderRepository.getReferenceById(pizzaOrderId);
+        PizzaOrder pizzaOrderFound = pizzaOrderRepository.getReferenceById(pizzaOrderId);
 
         if (isValid) {
             sendPizzaOrderEvent(pizzaOrderFound, VALIDATE_ORDER);
@@ -82,7 +82,9 @@ public class PizzaOrderManagerImpl implements PizzaOrderManager {
         getOptionalPizzaOrder(pizzaOrderDto, ALLOCATION_NO_INVENTORY, PENDING_INVENTORY);
     }
 
-    private void getOptionalPizzaOrder(PizzaOrderDto pizzaOrderDto, PizzaOrderEvent allocationNoInventory, PizzaOrderStatus pendingInventory) {
+    private void getOptionalPizzaOrder(PizzaOrderDto pizzaOrderDto,
+                                       PizzaOrderEvent allocationNoInventory,
+                                       PizzaOrderStatus pendingInventory) {
         Optional<PizzaOrder> pizzaOrderOptional = Optional.of(pizzaOrderRepository.getReferenceById(pizzaOrderDto.getId()));
 
         pizzaOrderOptional.ifPresentOrElse(pizzaOrder -> {
@@ -157,7 +159,7 @@ public class PizzaOrderManagerImpl implements PizzaOrderManager {
                 try {
                     log.debug("Sleeping for retry");
                     Thread.sleep(100);
-                } catch (Exception e) {
+                } catch (Exception ignored) {
 
                 }
             }

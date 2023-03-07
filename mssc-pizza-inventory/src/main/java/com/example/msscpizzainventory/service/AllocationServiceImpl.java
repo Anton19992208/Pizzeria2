@@ -26,12 +26,13 @@ public class AllocationServiceImpl implements AllocationService {
         AtomicInteger totalAllocated = new AtomicInteger();
 
         pizzaOrderDto.getPizzaOrderLines().forEach(pizzaOrderLine -> {
-            if ((((pizzaOrderLine.getOrderQuantity() != null ? pizzaOrderLine.getOrderQuantity() : 0)
-                    - (pizzaOrderLine.getQuantityAllocated() != null ? pizzaOrderLine.getQuantityAllocated() : 0)) > 0)) {
+            int orderQuantity = pizzaOrderLine.getOrderQuantity() != null ? pizzaOrderLine.getOrderQuantity() : 0;
+            int quantityAllocated = pizzaOrderLine.getQuantityAllocated() != null ? pizzaOrderLine.getQuantityAllocated() : 0;
+            if (orderQuantity - quantityAllocated > 0) {
                 allocatePizzaOrderLine(pizzaOrderLine);
             }
             totalOrdered.set(totalOrdered.get() + pizzaOrderLine.getOrderQuantity());
-            totalAllocated.set(totalAllocated.get() + (pizzaOrderLine.getQuantityAllocated() != null ? pizzaOrderLine.getQuantityAllocated() : 0));
+            totalAllocated.set(totalAllocated.get() + quantityAllocated);
         });
 
         log.debug("Total Ordered: " + totalOrdered.get() + " Total Allocated: " + totalAllocated.get());

@@ -32,7 +32,7 @@ public class PizzaInventory {
 
     private String upc;
 
-    private Integer quantityOnHand = 0;
+    private Integer quantityOnHand;
 
     private LocalDate createdDate;
 
