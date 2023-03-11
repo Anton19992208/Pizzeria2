@@ -1,0 +1,12 @@
+spring:
+  application:
+    name: config-server
+  cloud:
+    config:
+      server:
+        git:
+          uri: https://github.com/Anton19992208/config-folder
+          clone-on-start: true
+          default-label: main
+server:
+  port: 8888
