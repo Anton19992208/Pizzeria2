@@ -5,20 +5,12 @@ import com.example.msscpizzaservice.domain.Pizza;
 import com.example.msscpizzaservice.exception.NotFoundException;
 import com.example.msscpizzaservice.mapper.PizzaMapper;
 import com.example.msscpizzaservice.repository.PizzaRepository;
-import com.example.msscpizzaservice.service.inventory.InventoryServiceFeignClient;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.ObjectUtils;
-
-import java.util.List;
-import java.util.stream.Collectors;
-
-import static java.util.stream.Collectors.toList;
 
 @Service
 @Slf4j
@@ -27,7 +19,7 @@ public class PizzaServiceImpl implements PizzaService {
 
     private final PizzaRepository pizzaRepository;
     private final PizzaMapper pizzaMapper;
-    private final InventoryServiceFeignClient inventoryServiceFeignClient;
+
 
     @Cacheable(cacheNames = "pizzaListCache")
     @Override
@@ -40,6 +32,7 @@ public class PizzaServiceImpl implements PizzaService {
                     .map(pizzaMapper::pizzaToPizzaDto);
         }
     }
+
 
     @Cacheable(value = "pizzaCache")
     @Override
