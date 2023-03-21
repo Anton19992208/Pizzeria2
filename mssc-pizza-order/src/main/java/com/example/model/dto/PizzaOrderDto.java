@@ -14,13 +14,13 @@ import java.util.List;
 @Builder
 public class PizzaOrderDto {
 
-    private Long id = null;
+    private Long id;
 
-    private Integer version = null;
+    private Integer version;
 
-    private LocalDate createdDate = null;
+    private LocalDate createdDate;
 
-    private LocalDate lastModifiedDate = null;
+    private LocalDate lastModifiedDate;
 
     private Long customerId;
 

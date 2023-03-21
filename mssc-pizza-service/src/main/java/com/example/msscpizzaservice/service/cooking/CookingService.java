@@ -25,7 +25,7 @@ public class CookingService {
     private final PizzaMapper pizzaMapper;
     private final JmsTemplate jmsTemplate;
 
-    @Scheduled(fixedRate = 5000)
+    @Scheduled(fixedDelay = 10000L)
     public void checkForLowInventory() {
         List<Pizza> pizzas = pizzaRepository.findAll();
 

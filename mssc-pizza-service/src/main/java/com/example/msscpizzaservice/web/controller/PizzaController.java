@@ -1,10 +1,11 @@
 package com.example.msscpizzaservice.web.controller;
 
 import com.example.model.dto.PizzaDto;
-import com.example.model.dto.PizzaPagedList;
 import com.example.msscpizzaservice.service.PizzaService;
+import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -27,30 +28,15 @@ public class PizzaController {
 
     private final PizzaService pizzaService;
 
-    private static final Integer DEFAULT_PAGE_NUMBER = 0;
-    private static final Integer DEFAULT_PAGE_SIZE = 25;
-
     @GetMapping("pizza")
-    public ResponseEntity<PizzaPagedList> findAllPizzas(@RequestParam(value = "pageNumber", required = false) Integer pageNumber,
-                                                        @RequestParam(value = "pageSize", required = false) Integer pageSize,
-                                                        @RequestParam(value = "pizzaName", required = false) String pizzaName,
-                                                        @RequestParam(value = "pizzaSize", required = false) Integer pizzaSize,
-                                                        @RequestParam(value = "showInventoryOnHand", required = false) Boolean showInventoryOnHand) {
-        if (showInventoryOnHand == null) {
-            showInventoryOnHand = false;
-        }
+    @CircuitBreaker(name = "PIZZA-SERVICE", fallbackMethod = "findDefaultPizzas")
+    public ResponseEntity<Page<PizzaDto>> findAllPizzas(Pageable pageable, @RequestParam(value = "showInventoryOnHand") Boolean showInventoryOnHand) {
 
-        if (pageNumber == null || pageNumber < 0) {
-            pageNumber = DEFAULT_PAGE_NUMBER;
-        }
+        return new ResponseEntity<>(pizzaService.findAll(pageable, showInventoryOnHand), OK);
+    }
 
-        if (pageSize == null || pageSize < 1) {
-            pageSize = DEFAULT_PAGE_SIZE;
-        }
-
-        PizzaPagedList pizzas = pizzaService.findAll(pizzaName, pizzaSize, PageRequest.of(pageNumber, pageSize), showInventoryOnHand);
-
-        return new ResponseEntity<>(pizzas, OK);
+    public ResponseEntity<String> findDefaultPizzas(Exception e){
+        return new ResponseEntity<>("Inventory is down", OK);
     }
 
     @GetMapping("pizza/{pizzaId}")

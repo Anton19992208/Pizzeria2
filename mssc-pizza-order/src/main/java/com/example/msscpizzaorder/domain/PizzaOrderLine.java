@@ -24,11 +24,11 @@ public class PizzaOrderLine extends BaseEntity{
         super(id, version, createdDate, lastModifiedDate);
     }
 
-    @ManyToOne(fetch = LAZY)
+    @ManyToOne
     private PizzaOrder pizzaOrder;
 
     private Long pizzaId;
     private String upc;
-    private Integer orderQuantity = 0;
-    private Integer quantityAllocated = 0;
+    private Integer orderQuantity;
+    private Integer quantityAllocated;
 }

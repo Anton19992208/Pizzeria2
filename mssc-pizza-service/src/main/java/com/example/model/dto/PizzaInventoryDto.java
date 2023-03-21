@@ -17,5 +17,7 @@ public class PizzaInventoryDto {
     private LocalDate createdDate;
     private LocalDate lastModifiedDate;
     private Long pizzaId;
+    private String upc;
     private Integer quantityOnHand;
+
 }

@@ -15,9 +15,7 @@ import java.time.LocalDate;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class PizzaDto implements Serializable {
-
-    static final long serialVersionUID = -5815566940065181210L;
+public class PizzaDto {
 
     private Long id;
 

@@ -16,16 +16,16 @@ import java.util.List;
 public class PizzaOrderDto {
 
     @JsonProperty("id")
-    private Long id = null;
+    private Long id;
 
     @JsonProperty("version")
-    private Integer version = null;
+    private Integer version;
 
     @JsonProperty("createdDate")
-    private LocalDate createdDate = null;
+    private LocalDate createdDate;
 
     @JsonProperty("lastModifiedDate")
-    private LocalDate lastModifiedDate = null;
+    private LocalDate lastModifiedDate;
     private Long customerId;
     private String customerRef;
     private List<PizzaOrderLineDto> pizzaOrderLines;

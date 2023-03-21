@@ -18,8 +18,8 @@ public class PizzaInventoryBootstrap implements CommandLineRunner {
     public static final String PIZZA_2_UPC = "0631234300019";
     public static final String PIZZA_3_UPC = "0083783375213";
     private static final Long PIZZA_1_ID = 1L;
-    private static final Long PIZZA_2_ID = 345555L;
-    private static final Long PIZZA_3_ID = 585954L;
+    private static final Long PIZZA_2_ID = 2L;
+    private static final Long PIZZA_3_ID = 3L;
 
     @Override
     public void run(String... args) throws Exception {
@@ -38,13 +38,13 @@ public class PizzaInventoryBootstrap implements CommandLineRunner {
         PizzaInventory pizzaInventory2 = PizzaInventory.builder()
                 .pizzaId(PIZZA_2_ID)
                 .upc(PIZZA_2_UPC)
-                .quantityOnHand(50)
+                .quantityOnHand(22)
                 .build();
 
         PizzaInventory pizzaInventory3 = PizzaInventory.builder()
                 .pizzaId(PIZZA_3_ID)
                 .upc(PIZZA_3_UPC)
-                .quantityOnHand(50)
+                .quantityOnHand(33)
                 .build();
 
         pizzaInventoryRepository.saveAndFlush(pizzaInventory1);

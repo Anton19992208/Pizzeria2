@@ -35,5 +35,5 @@ public class PizzaOrderLineDto  {
 
     private LocalDate lastModifiedDate;
 
-    private Integer orderQuantity = 0;
+    private Integer orderQuantity;
 }

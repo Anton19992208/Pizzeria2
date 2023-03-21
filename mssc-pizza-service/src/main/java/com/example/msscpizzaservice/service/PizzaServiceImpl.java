@@ -1,7 +1,6 @@
 package com.example.msscpizzaservice.service;
 
 import com.example.model.dto.PizzaDto;
-import com.example.model.dto.PizzaPagedList;
 import com.example.msscpizzaservice.domain.Pizza;
 import com.example.msscpizzaservice.exception.NotFoundException;
 import com.example.msscpizzaservice.mapper.PizzaMapper;
@@ -10,11 +9,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-import org.springframework.util.ObjectUtils;
-
-import static java.util.stream.Collectors.toList;
 
 @Service
 @Slf4j
@@ -24,47 +20,19 @@ public class PizzaServiceImpl implements PizzaService {
     private final PizzaRepository pizzaRepository;
     private final PizzaMapper pizzaMapper;
 
+
     @Cacheable(cacheNames = "pizzaListCache")
     @Override
-    public PizzaPagedList findAll(String pizzaName, Integer size, PageRequest of, Boolean showQuantityOnHand) {
-        PizzaPagedList pizzaPagedList;
-        Page<Pizza> pizzaPage;
-
-        if (!ObjectUtils.isEmpty(pizzaName) && !ObjectUtils.isEmpty(size)) {
-            pizzaPage = pizzaRepository.findAllByNameAndSize(pizzaName, size, of);
-        } else if (!ObjectUtils.isEmpty(pizzaName) && ObjectUtils.isEmpty(size)) {
-            pizzaPage = pizzaRepository.findAllByName(pizzaName, of);
-        } else if (ObjectUtils.isEmpty(pizzaName) && !ObjectUtils.isEmpty(size)) {
-            pizzaPage = pizzaRepository.findAllBySize(size, of);
-        } else {
-            pizzaPage = pizzaRepository.findAll(of);
-        }
-
+    public Page<PizzaDto> findAll(Pageable pageable, Boolean showQuantityOnHand) {
         if (showQuantityOnHand) {
-            pizzaPagedList = new PizzaPagedList(
-                    pizzaPage.getContent()
-                            .stream()
-                            .map(pizzaMapper::pizzaToPizzaDtoWithInventory)
-                            .collect(toList()),
-                    PageRequest
-                            .of(pizzaPage.getPageable().getPageNumber(),
-                                    pizzaPage.getPageable().getPageSize()),
-                    pizzaPage.getTotalElements());
-
+            return pizzaRepository.findAll(pageable)
+                    .map(pizzaMapper::pizzaToPizzaDtoWithInventory);
         } else {
-            pizzaPagedList = new PizzaPagedList(
-                    pizzaPage.getContent()
-                            .stream()
-                            .map(pizzaMapper::pizzaToPizzaDto)
-                            .collect(toList()),
-                    PageRequest
-                            .of(pizzaPage.getPageable().getPageNumber(),
-                                    pizzaPage.getPageable().getPageSize()),
-                    pizzaPage.getTotalElements());
-
+            return pizzaRepository.findAll(pageable)
+                    .map(pizzaMapper::pizzaToPizzaDto);
         }
-        return pizzaPagedList;
     }
+
 
     @Cacheable(value = "pizzaCache")
     @Override
