@@ -11,7 +11,7 @@
 
     <cache-template name="config-cache">
         <expiry>
-            <ttl unit="minutes">5</ttl>
+            <ttl unit="minutes">1</ttl>
         </expiry>
         <resources>
             <offheap unit="MB">1</offheap>

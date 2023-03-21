@@ -2,6 +2,7 @@ package com.example.msscpizzaservice.web.controller;
 
 import com.example.model.dto.PizzaDto;
 import com.example.msscpizzaservice.service.PizzaService;
+import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -28,9 +29,14 @@ public class PizzaController {
     private final PizzaService pizzaService;
 
     @GetMapping("pizza")
+    @CircuitBreaker(name = "PIZZA-SERVICE", fallbackMethod = "findDefaultPizzas")
     public ResponseEntity<Page<PizzaDto>> findAllPizzas(Pageable pageable, @RequestParam(value = "showInventoryOnHand") Boolean showInventoryOnHand) {
 
         return new ResponseEntity<>(pizzaService.findAll(pageable, showInventoryOnHand), OK);
+    }
+
+    public ResponseEntity<String> findDefaultPizzas(Exception e){
+        return new ResponseEntity<>("Inventory is down", OK);
     }
 
     @GetMapping("pizza/{pizzaId}")
