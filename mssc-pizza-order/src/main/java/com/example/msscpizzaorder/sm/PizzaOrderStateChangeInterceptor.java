@@ -13,6 +13,7 @@ import org.springframework.statemachine.state.State;
 import org.springframework.statemachine.support.StateMachineInterceptorAdapter;
 import org.springframework.statemachine.transition.Transition;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 
@@ -23,12 +24,12 @@ public class PizzaOrderStateChangeInterceptor extends StateMachineInterceptorAda
 
     private final PizzaOrderRepository pizzaOrderRepository;
 
+    @Transactional
     @Override
-    public void postStateChange(State<PizzaOrderStatus, PizzaOrderEvent> state,
+    public void preStateChange(State<PizzaOrderStatus, PizzaOrderEvent> state,
                                 Message<PizzaOrderEvent> message,
                                 Transition<PizzaOrderStatus, PizzaOrderEvent> transition,
-                                StateMachine<PizzaOrderStatus, PizzaOrderEvent> stateMachine,
-                                StateMachine<PizzaOrderStatus, PizzaOrderEvent> rootStateMachine) {
+                                StateMachine<PizzaOrderStatus, PizzaOrderEvent> stateMachine) {
         log.debug("Pre-State Change");
 
         Optional.ofNullable(message)

@@ -3,10 +3,6 @@ spring:
     name: pizza-service
   cloud:
     config:
-      uri: http://localhost:8888
-      fail-fast: true
-      password: password
-
-
-
-
+       uri: http://localhost:8888
+       fail-fast: true
+       password: password

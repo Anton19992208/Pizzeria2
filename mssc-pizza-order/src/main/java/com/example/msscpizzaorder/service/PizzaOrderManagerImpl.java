@@ -3,7 +3,6 @@ package com.example.msscpizzaorder.service;
 import com.example.model.dto.PizzaOrderDto;
 import com.example.msscpizzaorder.domain.PizzaOrder;
 import com.example.msscpizzaorder.domain.PizzaOrderEvent;
-import com.example.msscpizzaorder.domain.PizzaOrderLine;
 import com.example.msscpizzaorder.domain.PizzaOrderStatus;
 import com.example.msscpizzaorder.repository.PizzaOrderRepository;
 import com.example.msscpizzaorder.sm.PizzaOrderStateChangeInterceptor;
@@ -17,7 +16,6 @@ import org.springframework.statemachine.support.DefaultStateMachineContext;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -53,30 +51,40 @@ public class PizzaOrderManagerImpl implements PizzaOrderManager {
         return savedPizzaOrder;
     }
 
+
+    @Transactional
     @Override
     public void processValidationResult(Long pizzaOrderId, Boolean isValid) {
         log.debug("Process validation for pizzaOrderId" + pizzaOrderId + "isValid?: " + isValid);
 
-        PizzaOrder pizzaOrderFound = pizzaOrderRepository.getReferenceById(pizzaOrderId);
+        Optional<PizzaOrder> pizzaOrderFound = pizzaOrderRepository.findById(pizzaOrderId);
 
-        if (isValid) {
-            sendPizzaOrderEvent(pizzaOrderFound, VALIDATE_ORDER);
+        pizzaOrderFound.ifPresentOrElse(beerOrder -> {
+            if(isValid){
+                sendPizzaOrderEvent(beerOrder, PizzaOrderEvent.VALIDATION_PASSED);
 
-            awaitForStatus(pizzaOrderId, ALLOCATION_PENDING);
+                //wait for status change
+                awaitForStatus(pizzaOrderId, PizzaOrderStatus.VALIDATED);
 
-            PizzaOrder validatedOrder = pizzaOrderRepository.findById(pizzaOrderId).get();
+                PizzaOrder validatedOrder = pizzaOrderRepository.findById(pizzaOrderId).get();
 
-            sendPizzaOrderEvent(validatedOrder, ALLOCATE_ORDER);
-        } else {
-            sendPizzaOrderEvent(pizzaOrderFound, VALIDATION_FAILED);
-        }
+                sendPizzaOrderEvent(validatedOrder, PizzaOrderEvent.ALLOCATE_ORDER);
+
+            } else {
+                sendPizzaOrderEvent(beerOrder, PizzaOrderEvent.VALIDATION_FAILED);
+            }
+        }, () -> log.error("Order Not Found. Id: " + pizzaOrderId));
     }
 
+
+
+    @Transactional
     @Override
     public void pizzaOrderAllocationPassed(PizzaOrderDto pizzaOrderDto) {
         getOptionalPizzaOrder(pizzaOrderDto, ALLOCATION_SUCCESS, ALLOCATED);
     }
 
+    @Transactional
     @Override
     public void pizzaOrderAllocationPendingInventory(PizzaOrderDto pizzaOrderDto) {
         getOptionalPizzaOrder(pizzaOrderDto, ALLOCATION_NO_INVENTORY, PENDING_INVENTORY);
@@ -94,6 +102,7 @@ public class PizzaOrderManagerImpl implements PizzaOrderManager {
         }, () -> log.error("Order Id Not Found: " + pizzaOrderDto.getId()));
     }
 
+    @Transactional
     @Override
     public void pizzaOrderAllocationFailed(PizzaOrderDto pizzaOrderDto) {
         Optional<PizzaOrder> pizzaOrderOptional = Optional.of(pizzaOrderRepository.getReferenceById(pizzaOrderDto.getId()));
@@ -178,7 +187,7 @@ public class PizzaOrderManagerImpl implements PizzaOrderManager {
     }
 
     private StateMachine<PizzaOrderStatus, PizzaOrderEvent> build(PizzaOrder pizzaOrder) {
-        StateMachine<PizzaOrderStatus, PizzaOrderEvent> sm = stateMachineFactory.getStateMachine();
+        StateMachine<PizzaOrderStatus, PizzaOrderEvent> sm = stateMachineFactory.getStateMachine(String.valueOf(pizzaOrder.getId()));
 
         sm.stop();
 

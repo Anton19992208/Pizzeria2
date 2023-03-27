@@ -1,0 +1,17 @@
+spring:
+  application:
+    name: pizza-inventory
+  zipkin:
+    base-url: http://localhost:9411/
+  security:
+    user:
+      name: name
+      password: password
+eureka:
+  client:
+    service-url:
+      defaultZone: http://name:password@localhost:8761/eureka
+  instance:
+    hostname: localhost
+server:
+  port: 8082

@@ -10,7 +10,7 @@ import org.springframework.jms.support.converter.MessageType;
 
 import javax.jms.ConnectionFactory;
 
-@Configuration
+@Configuration(proxyBeanMethods=false)
 @EnableJms
 public class JmsConfig {
 
