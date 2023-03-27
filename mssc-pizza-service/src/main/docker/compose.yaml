@@ -1,10 +1,35 @@
 version: '3,8'
 services:
+  jenkins:
+    image: jenkins/jenkins
+    ports:
+      - 8084:8084
+  elasticsearch:
+    image: docker.elastic.co/kibana/kibana:8.0.0-alpha2
+    ports:
+       - 9200:9200
+    environment:
+      discovery.type: single-node
+  kibana:
+    image: docker.elastic.co/kibana/kibana:7.7.0
+    ports:
+      - 5601:5601
+    restart: on-failure
+    depends_on:
+      - elasticsearch
+  filebeat:
+    image: docker.elastic.co/beats/filebeat:7.7.0
+    volumes:
+      - ./filebeat/filebeat.docker.yaml:/usr/share/filebeat/filebeat.yaml:ro
+      - /var/lib/docker/containers:/var/lib/docker/containers:ro
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    user: root
+    restart: on-failure
   jms:
     image: qoricode/activemq-artemis
     ports:
       - 8161:8161
-      - 61616:61616
+#      - 61616:61616
   zipkin:
     image: openzipkin/zipkin
     ports:
@@ -16,11 +41,11 @@ services:
   config:
     image: anton19992208/config-server
     ports:
-      - 8888:8888
+      - "8888:8888"
     depends_on:
       - eureka
     environment:
-      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://netflix:eureka@eureka:8761/eureka/
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE:  http://name:password@eureka:8761/eureka
   pizza-inventory:
     image: anton19992208/pizza-inventory
     ports:
@@ -30,19 +55,22 @@ services:
       - config
       - jms
     environment:
-      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://netflix:eureka@eureka:8761/eureka/
+      EUREKA_CLIENT_SERVICE-URL_DEFAULTZONE: http://name:password@eureka:8761/eureka
       SPRING_PROFILE_ACTIVE: local-discovery
       SPRING_ZIPKIN_BASEURL: http://zipkin
       SPRING_ARTEMIS_HOST: jms
+    restart: on-failure
+    labels:
+        collect_logs_with_filebeat: "true"
+        decode_log_event_to_json_object: "true"
   inventory-service-failover:
     image: anton19992208/pizza-inventory-failover
     ports:
       - 8083:8083
     depends_on:
       - eureka
-      - config
     environment:
-      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://netflix:eureka@eureka:8761/eureka/
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE:  http://name:password@eureka:8761/eureka
   pizza-service:
     image: anton19992208/pizzeria-service
     ports:
@@ -52,7 +80,7 @@ services:
       - config
       - jms
     environment:
-      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://netflix:eureka@eureka:8761/eureka/
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE:  http://name:password@eureka:8761/eureka
       SPRING_PROFILE_ACTIVE: local-discovery
       SPRING_ZIPKIN_BASEURL: http://zipkin
       SPRING_ARTEMIS_HOST: jms
@@ -60,17 +88,20 @@ services:
     image: anton19992208/pizza-order-service
     ports:
       - 8081:8081
-#    depends_on:
-#      - eureka
-#      - config
-#      - jms
-#      - pizza-service
-#    environment:
-#      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://netflix:eureka@eureka:8761/eureka/
-#      SPRING_PROFILE_ACTIVE: local-discovery
-#      SPRING_ZIPKIN_BASEURL: http://zipkin
-#      SPRING_ARTEMIS_HOST: jms
-#      SFG_PIZZERIA_PIZZA-SERVICE-HOST: http://pizza-service:8080
+    depends_on:
+      - eureka
+      - config
+      - jms
+      - pizza-service
+    environment:
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE:  http://name:password@eureka:8761/eureka
+      SPRING_CLOUD_CONFIG_PASSWORD: password
+      SPRING_CLOUD_CONFIG_URI: http://localhost:8888
+      SPRING_CLOUD_CONFIG_USERNAME: user
+      SPRING_PROFILE_ACTIVE: local-discovery
+      SPRING_ZIPKIN_BASEURL: http://zipkin
+      SPRING_ARTEMIS_HOST: jms
+      SFG_PIZZERIA_PIZZA-SERVICE-HOST: http://pizza-service:8080
   gateway:
     image: anton19992208/gateway-service
     ports:

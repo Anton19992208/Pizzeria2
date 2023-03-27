@@ -27,7 +27,7 @@ public class BaseEntity {
 
     private LocalDate lastModifiedDate;
 
-    public boolean isNew(){
-        return this.id == null;
-    }
+//    public boolean isNew(){
+//        return this.id == null;
+//    }
 }
